@@ -3,7 +3,7 @@
     "description": "WorkOS AuthKit and SSO integration for Craft CMS Control Panel authentication",
     "version": "1.0.0",
     "type": "craft-plugin",
-    "license": "MIT",
+    "license": "proprietary",
     "keywords": [
         "craftcms",
         "craft-plugin",

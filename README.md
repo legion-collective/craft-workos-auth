@@ -205,4 +205,4 @@ php craft env
 
 ## License
 
-MIT
+Proprietary
