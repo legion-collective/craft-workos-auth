@@ -19,68 +19,7 @@ A Craft CMS plugin that integrates [WorkOS](https://workos.com) AuthKit and SSO 
 
 ## Installation
 
-### Option 1: Local Path (Development)
-
-Clone or copy the plugin to your project:
-
-```bash
-# In your Craft project
-mkdir -p plugins
-cp -r /path/to/craft-workos-auth plugins/workos-auth
-```
-
-Add to your `composer.json`:
-
-```json
-{
-    "repositories": [
-        {
-            "type": "path",
-            "url": "plugins/workos-auth"
-        }
-    ],
-    "require": {
-        "workos/craft-workos-auth": "*"
-    }
-}
-```
-
-Then run:
-
-```bash
-composer update
-php craft plugin/install workos-auth
-```
-
-### Option 2: Private GitHub Repository
-
-#### With SSH (servers with deploy keys)
-
-Add to your `composer.json`:
-
-```json
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:legion-collective/craft-workos-auth.git"
-        }
-    ],
-    "require": {
-        "workos/craft-workos-auth": "^1.0"
-    }
-}
-```
-
-#### With HTTPS + GitHub Token
-
-First, configure a GitHub personal access token:
-
-```bash
-composer config github-oauth.github.com YOUR_GITHUB_TOKEN
-```
-
-Then add to `composer.json`:
+Add the repository to your `composer.json`:
 
 ```json
 {
@@ -96,17 +35,7 @@ Then add to `composer.json`:
 }
 ```
 
-#### For DDEV
-
-Enable SSH agent forwarding:
-
-```bash
-ddev auth ssh
-```
-
-Then use the SSH URL method above.
-
-### After Adding Repository
+Then run:
 
 ```bash
 composer update
@@ -205,4 +134,4 @@ php craft env
 
 ## License
 
-Proprietary
+MIT
