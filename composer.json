@@ -1,5 +1,5 @@
 {
-    "name": "workos/craft-workos-auth",
+    "name": "legion-collective/craft-workos-auth",
     "description": "WorkOS AuthKit and SSO integration for Craft CMS Control Panel authentication",
     "version": "1.0.0",
     "type": "craft-plugin",
