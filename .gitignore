@@ -1,0 +1,14 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Composer
+/vendor/
+composer.lock
+
+# Testing
+.phpunit.result.cache
+coverage/

@@ -1,0 +1,179 @@
+{% import '_includes/forms.twig' as forms %}
+
+<h2>General Settings</h2>
+
+{{ forms.lightswitchField({
+    label: 'Enable WorkOS Authentication',
+    instructions: 'Enable or disable WorkOS authentication for the Control Panel.',
+    id: 'enabled',
+    name: 'enabled',
+    on: settings.enabled
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Debug Mode',
+    instructions: 'When enabled, shows detailed error messages. Disable in production for security.',
+    id: 'debug',
+    name: 'debug',
+    on: settings.debug,
+    warning: settings.debug ? 'Debug mode is enabled. Disable for production.' : null
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Replace Default Login',
+    instructions: 'Replace the standard Craft login form with WorkOS-only authentication.',
+    id: 'replaceDefaultLogin',
+    name: 'replaceDefaultLogin',
+    on: settings.replaceDefaultLogin
+}) }}
+
+{{ forms.textField({
+    label: 'Login Button Text',
+    instructions: 'Custom text for the WorkOS login button.',
+    id: 'loginButtonText',
+    name: 'loginButtonText',
+    value: settings.loginButtonText
+}) }}
+
+<hr>
+<h2>WorkOS Credentials</h2>
+
+<p class="light" style="margin-bottom: 16px;">Enter your WorkOS credentials here, or leave blank to use environment variables (<code>WORKOS_CLIENT_ID</code>, <code>WORKOS_API_KEY</code>, <code>WORKOS_REDIRECT_URI</code>).</p>
+
+{{ forms.autosuggestField({
+    label: 'Client ID',
+    instructions: 'Your WorkOS Client ID. Leave empty to use `WORKOS_CLIENT_ID` env variable.',
+    id: 'clientId',
+    name: 'clientId',
+    value: settings.clientId,
+    suggestEnvVars: true,
+    placeholder: '$WORKOS_CLIENT_ID'
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'API Key',
+    instructions: 'Your WorkOS API Key. Leave empty to use `WORKOS_API_KEY` env variable.',
+    id: 'apiKey',
+    name: 'apiKey',
+    value: settings.apiKey,
+    suggestEnvVars: true,
+    placeholder: '$WORKOS_API_KEY'
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Redirect URI',
+    instructions: 'OAuth callback URL (e.g., https://yoursite.com/workos-auth/callback). Leave empty to use `WORKOS_REDIRECT_URI` env variable.',
+    id: 'redirectUri',
+    name: 'redirectUri',
+    value: settings.redirectUri,
+    suggestEnvVars: true,
+    placeholder: '$WORKOS_REDIRECT_URI'
+}) }}
+
+<hr>
+<h2>Authentication Method</h2>
+
+{{ forms.selectField({
+    label: 'Authentication Provider',
+    instructions: 'Choose how users authenticate.',
+    id: 'provider',
+    name: 'provider',
+    value: settings.provider,
+    options: [
+        {label: 'AuthKit (All configured methods)', value: 'authkit'},
+        {label: 'Google OAuth', value: 'GoogleOAuth'},
+        {label: 'Microsoft OAuth', value: 'MicrosoftOAuth'},
+        {label: 'GitHub OAuth', value: 'GitHubOAuth'},
+        {label: 'Apple OAuth', value: 'AppleOAuth'},
+        {label: 'Custom Connection ID', value: ''},
+    ]
+}) }}
+
+{{ forms.textField({
+    label: 'Connection ID',
+    instructions: 'For enterprise SSO, enter your WorkOS connection ID (e.g., conn_xxxxx). Leave empty if using a provider above.',
+    id: 'connectionId',
+    name: 'connectionId',
+    value: settings.connectionId
+}) }}
+
+{{ forms.textField({
+    label: 'Organization ID',
+    instructions: 'Optional WorkOS organization ID for organization-scoped authentication.',
+    id: 'organizationId',
+    name: 'organizationId',
+    value: settings.organizationId
+}) }}
+
+<hr>
+<h2>User Management</h2>
+
+{{ forms.lightswitchField({
+    label: 'Auto-Create Users',
+    instructions: 'Automatically create Craft users when they authenticate via WorkOS.',
+    id: 'autoCreateUsers',
+    name: 'autoCreateUsers',
+    on: settings.autoCreateUsers,
+    warning: settings.autoCreateUsers and not settings.allowedDomains ? 'Warning: With no domain restrictions, anyone can create an account!' : null
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Update User on Login',
+    instructions: 'Update user profile (name, etc.) from WorkOS on each login.',
+    id: 'updateUserOnLogin',
+    name: 'updateUserOnLogin',
+    on: settings.updateUserOnLogin
+}) }}
+
+{% set allGroups = craft.app.userGroups.allGroups %}
+{% set groupOptions = [{label: '-- None --', value: ''}] %}
+{% for group in allGroups %}
+    {% set groupOptions = groupOptions|merge([{label: group.name, value: group.handle}]) %}
+{% endfor %}
+
+{{ forms.selectField({
+    label: 'Default User Group',
+    instructions: 'Assign newly created users to this group.',
+    id: 'defaultUserGroup',
+    name: 'defaultUserGroup',
+    value: settings.defaultUserGroup,
+    options: groupOptions
+}) }}
+
+<hr>
+<h2>Security</h2>
+
+{{ forms.textField({
+    label: 'Allowed Domains',
+    instructions: 'Comma-separated list of email domains allowed to log in. Leave empty to allow all domains.',
+    id: 'allowedDomains',
+    name: 'allowedDomains',
+    value: settings.allowedDomains,
+    placeholder: 'company.com, subsidiary.com'
+}) }}
+
+{{ forms.textField({
+    label: 'Admin Email Domains',
+    instructions: 'Comma-separated list of email domains that automatically receive admin access.',
+    id: 'adminEmailDomains',
+    name: 'adminEmailDomains',
+    value: settings.adminEmailDomains,
+    placeholder: 'company.com',
+    warning: settings.adminEmailDomains ? 'Users from these domains get FULL ADMIN access!' : null
+}) }}
+
+<hr>
+<h2>Webhooks</h2>
+
+<p class="light">For Directory Sync, configure a webhook in your WorkOS dashboard pointing to:</p>
+<p style="margin-bottom: 16px;"><code>{{ siteUrl }}workos-auth/webhook</code></p>
+
+{{ forms.autosuggestField({
+    label: 'Webhook Secret',
+    instructions: 'Your WorkOS webhook signing secret. Leave empty to use `WORKOS_WEBHOOK_SECRET` env variable.',
+    id: 'webhookSecret',
+    name: 'webhookSecret',
+    value: settings.webhookSecret,
+    suggestEnvVars: true,
+    placeholder: '$WORKOS_WEBHOOK_SECRET'
+}) }}

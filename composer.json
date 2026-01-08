@@ -1,0 +1,34 @@
+{
+    "name": "workos/craft-workos-auth",
+    "description": "WorkOS AuthKit and SSO integration for Craft CMS Control Panel authentication",
+    "version": "1.0.0",
+    "type": "craft-plugin",
+    "license": "MIT",
+    "keywords": [
+        "craftcms",
+        "craft-plugin",
+        "workos",
+        "sso",
+        "authentication",
+        "authkit"
+    ],
+    "support": {
+        "docs": "https://workos.com/docs"
+    },
+    "require": {
+        "craftcms/cms": "^4.0",
+        "workos/workos-php": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "workosauth\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "WorkOS Auth",
+        "handle": "workos-auth",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "class": "workosauth\\Plugin"
+    }
+}
