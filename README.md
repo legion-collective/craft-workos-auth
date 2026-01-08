@@ -19,30 +19,97 @@ A Craft CMS plugin that integrates [WorkOS](https://workos.com) AuthKit and SSO 
 
 ## Installation
 
-### Via Composer (Private Repository)
+### Option 1: Local Path (Development)
 
-Add the repository to your project's `composer.json`:
+Clone or copy the plugin to your project:
+
+```bash
+# In your Craft project
+mkdir -p plugins
+cp -r /path/to/craft-workos-auth plugins/workos-auth
+```
+
+Add to your `composer.json`:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "path",
+            "url": "plugins/workos-auth"
+        }
+    ],
+    "require": {
+        "workos/craft-workos-auth": "*"
+    }
+}
+```
+
+Then run:
+
+```bash
+composer update
+php craft plugin/install workos-auth
+```
+
+### Option 2: Private GitHub Repository
+
+#### With SSH (servers with deploy keys)
+
+Add to your `composer.json`:
 
 ```json
 {
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:your-org/craft-workos-auth.git"
+            "url": "git@github.com:legion-collective/craft-workos-auth.git"
         }
-    ]
+    ],
+    "require": {
+        "workos/craft-workos-auth": "^1.0"
+    }
 }
 ```
 
-Then require the package:
+#### With HTTPS + GitHub Token
+
+First, configure a GitHub personal access token:
 
 ```bash
-composer require workos/craft-workos-auth
+composer config github-oauth.github.com YOUR_GITHUB_TOKEN
 ```
 
-Install the plugin:
+Then add to `composer.json`:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/legion-collective/craft-workos-auth.git"
+        }
+    ],
+    "require": {
+        "workos/craft-workos-auth": "^1.0"
+    }
+}
+```
+
+#### For DDEV
+
+Enable SSH agent forwarding:
 
 ```bash
+ddev auth ssh
+```
+
+Then use the SSH URL method above.
+
+### After Adding Repository
+
+```bash
+composer update
 php craft plugin/install workos-auth
 ```
 
@@ -63,13 +130,20 @@ WORKOS_WEBHOOK_SECRET=xxxxx  # Optional, for directory sync
 
 Navigate to **Settings → Plugins → WorkOS Auth** in the Control Panel to configure:
 
-- **Enable/Disable** - Toggle WorkOS authentication
-- **Replace Default Login** - Hide Craft's login form, show only WorkOS
-- **Authentication Provider** - AuthKit, Google, Microsoft, etc.
-- **Auto-Create Users** - Create Craft users for new WorkOS users
-- **Allowed Domains** - Restrict login to specific email domains
-- **Admin Domains** - Auto-grant admin access to specific domains
-- **Default User Group** - Assign new users to a group
+| Setting | Description |
+|---------|-------------|
+| **Enable/Disable** | Toggle WorkOS authentication |
+| **Debug Mode** | Show detailed errors (disable in production) |
+| **Replace Default Login** | Hide Craft's login form, show only WorkOS |
+| **Login Button Text** | Customize the SSO button text |
+| **Authentication Provider** | AuthKit, Google, Microsoft, GitHub, Apple |
+| **Connection ID** | For enterprise SSO connections |
+| **Organization ID** | For organization-scoped auth |
+| **Auto-Create Users** | Create Craft users for new WorkOS users |
+| **Update User on Login** | Sync profile data on each login |
+| **Default User Group** | Assign new users to a group |
+| **Allowed Domains** | Restrict login to specific email domains |
+| **Admin Domains** | Auto-grant admin access to specific domains |
 
 ### WorkOS Dashboard Setup
 
@@ -92,13 +166,42 @@ https://yoursite.com/workos-auth/webhook
 
 Set your webhook secret in the plugin settings or via `WORKOS_WEBHOOK_SECRET`.
 
+Supported events:
+- `dsync.user.created` - Creates new Craft user
+- `dsync.user.updated` - Updates user profile
+- `dsync.user.deleted` - Suspends user account
+- `user.created` / `user.updated` / `user.deleted` - User Management events
+
 ## Security
 
 - CSRF protection via OAuth state parameter
 - Open redirect prevention on return URLs
-- Webhook signature verification
+- Webhook signature verification (HMAC-SHA256)
 - Session regeneration on login
-- Debug mode for development (disable in production)
+- Generic error messages by default (detailed in debug mode)
+- Domain-based access control
+
+## Troubleshooting
+
+### Redirect Loop After Login
+
+Check that your `WORKOS_REDIRECT_URI` doesn't include `/admin`:
+- ✅ `https://yoursite.com/workos-auth/callback`
+- ❌ `https://yoursite.com/admin/workos-auth/callback`
+
+### "WorkOS is not configured" Error
+
+Ensure your environment variables are set:
+```bash
+php craft env
+# Should show WORKOS_CLIENT_ID and WORKOS_API_KEY
+```
+
+### User Can't Log In
+
+1. Check "Allowed Domains" setting - user's email domain must match
+2. Check if user account is suspended or locked in Craft
+3. Enable Debug Mode to see detailed error messages
 
 ## License
 
